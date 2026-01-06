@@ -12,18 +12,34 @@ license = { text = "MIT" }
 authors = [{ name = "Marko Rosenmüller" }]
 keywords = []
 dependencies = [
+  "accelerate>=0.33",
+  "bitsandbytes>=0.43",
+  "datasets>=2.20",
+  "huggingface-hub>=0.24",
+  "numpy>=1.26",
+  "peft>=0.12",
+  "safetensors>=0.4",
+  "tokenizers>=0.19",
+  "transformers==4.56.2",
+  "trl==0.22.2",
+  "unsloth",
+  "unsloth_zoo",
 ]
 
 [project.scripts]
+prepare-dataset = "fine_tune_gptoss.cli.prepare_dataset:main"
+train = "fine_tune_gptoss.cli.train:main"
 
 [tool.setuptools]
-package-dir = {"" = "."}
+package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
-include = ["reb00t*"]
+where = ["src"]
+include = ["fine_tune_gptoss*"]
 exclude = ["tests*", "docs*"]
 
 [project.optional-dependencies]
 dev = [
+  "ruff>=0.7",
   "pytest>=8.2",
 ]
