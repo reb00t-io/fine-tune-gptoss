@@ -3,10 +3,14 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+import unsloth  # noqa: F401  # Must be imported before transformers/trl/peft for patching.
+
 import torch
-from datasets import load_from_disk
-from trl import SFTConfig, SFTTrainer
+from datasets import Dataset, DatasetDict, load_from_disk
 from unsloth import FastLanguageModel
+
+from trl.trainer.sft_config import SFTConfig
+from trl.trainer.sft_trainer import SFTTrainer
 
 from fine_tune_gptoss.paths import default_outputs_dir, default_processed_dir
 
@@ -72,14 +76,23 @@ def main() -> None:
 
     print(f"Loading formatted dataset from: {dataset_dir}")
     train_dataset = load_from_disk(str(dataset_dir))
+    if isinstance(train_dataset, DatasetDict):
+        # Prefer a conventional split name if present; otherwise take the first.
+        split_name = "train" if "train" in train_dataset else next(iter(train_dataset.keys()))
+        train_dataset = train_dataset[split_name]
+    assert isinstance(train_dataset, Dataset)
 
     print(f"Loading base model via Unsloth: {args.model}")
+
+    device_map = "cuda:0" if torch.cuda.device_count() == 1 else "auto"
+
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=args.model,
         dtype=None,
         max_seq_length=args.max_seq_length,
         load_in_4bit=bool(args.load_in_4bit),
         full_finetuning=False,
+        device_map=device_map,
     )
 
     model = FastLanguageModel.get_peft_model(
@@ -105,7 +118,7 @@ def main() -> None:
 
     trainer = SFTTrainer(
         model=model,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         train_dataset=train_dataset,
         args=SFTConfig(
             dataset_text_field="text",
