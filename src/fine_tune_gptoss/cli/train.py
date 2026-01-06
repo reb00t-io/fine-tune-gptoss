@@ -18,7 +18,11 @@ from fine_tune_gptoss.paths import default_outputs_dir, default_processed_dir
 def build_argparser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Fine-tune GPT-OSS with Unsloth (LoRA via TRL SFTTrainer).")
 
-    p.add_argument("--model", default="unsloth/gpt-oss-20b", help="Base model (default: unsloth/gpt-oss-20b).")
+    p.add_argument(
+        "--model",
+        default="unsloth/gpt-oss-20b-unsloth-bnb-4bit",
+        help="Base model (default: unsloth/gpt-oss-20b-unsloth-bnb-4bit).",
+    )
     p.add_argument(
         "--dataset-dir",
         default=None,
@@ -71,7 +75,7 @@ def main() -> None:
             "Run: prepare-dataset (or pass --dataset-dir)."
         )
 
-    output_dir = Path(args.output_dir) if args.output_dir else (default_outputs_dir() / "gpt-oss-20b-lora")
+    output_dir = Path(args.output_dir) if args.output_dir else (default_outputs_dir() / "gpt-oss-20b-bnb4bit-lora")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Loading formatted dataset from: {dataset_dir}")

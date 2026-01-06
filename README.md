@@ -3,6 +3,7 @@
 Plain-Python repo to fine-tune **OpenAI GPT-OSS** models using **Unsloth + TRL**.
 
 - Default model: `unsloth/gpt-oss-20b`
+- Default model: `unsloth/gpt-oss-20b-unsloth-bnb-4bit`
 
 ## Quickstart
 
@@ -43,7 +44,7 @@ prepare-dataset --max-samples 512
 train --max-steps 30
 ```
 
-Outputs LoRA adapters to `outputs/gpt-oss-20b-lora/`.
+Outputs LoRA adapters to `outputs/gpt-oss-20b-bnb4bit-lora/`.
 
 ## Repo layout
 

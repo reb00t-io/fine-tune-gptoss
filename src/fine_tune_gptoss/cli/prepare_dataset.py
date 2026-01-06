@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from typing import cast
 
+from datasets import Dataset
 from datasets import load_dataset
 from transformers import AutoTokenizer
 
@@ -20,8 +22,8 @@ def build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--split", default="train", help="Dataset split (default: train).")
     p.add_argument(
         "--model",
-        default="unsloth/gpt-oss-20b",
-        help="Tokenizer source model (default: unsloth/gpt-oss-20b).",
+        default="unsloth/gpt-oss-20b-unsloth-bnb-4bit",
+        help="Tokenizer source model (default: unsloth/gpt-oss-20b-unsloth-bnb-4bit).",
     )
     p.add_argument(
         "--out",
@@ -44,7 +46,7 @@ def main() -> None:
     out_dir.parent.mkdir(parents=True, exist_ok=True)
 
     print(f"Loading dataset: {args.dataset} [{args.split}]")
-    dataset = load_dataset(args.dataset, split=args.split)
+    dataset = cast(Dataset, load_dataset(args.dataset, split=args.split))
 
     if args.max_samples:
         dataset = dataset.select(range(min(args.max_samples, len(dataset))))
@@ -58,12 +60,16 @@ def main() -> None:
     dataset = standardize_sharegpt(dataset)
 
     print("Formatting examples into a single 'text' column...")
-    dataset = dataset.map(
+    dataset = cast(
+        Dataset,
+        dataset.map(
         lambda batch: format_sharegpt_messages_as_text(batch, tokenizer=tokenizer),
         batched=True,
+        ),
     )
 
-    dataset = dataset.remove_columns([c for c in dataset.column_names if c != "text"])
+    cols_to_drop = [c for c in (dataset.column_names or []) if c != "text"]
+    dataset = dataset.remove_columns(cols_to_drop)
 
     print(f"Saving to: {out_dir}")
     dataset.save_to_disk(str(out_dir))
@@ -71,7 +77,9 @@ def main() -> None:
     print("Done.")
     print(f"Examples: {len(dataset)}")
     print("First formatted sample:\n")
-    print(dataset[0]["text"][:2000])
+    first_row = cast(dict[str, list[str]], dataset.select([0]).to_dict())
+    first_text = first_row["text"][0]
+    print(first_text[:2000])
 
 
 if __name__ == "__main__":
