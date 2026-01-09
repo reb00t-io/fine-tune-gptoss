@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
+
+/unsloth_compiled_cache/
 
 # C extensions
 *.so

@@ -86,6 +86,8 @@ def main() -> None:
         train_dataset = train_dataset[split_name]
     assert isinstance(train_dataset, Dataset)
 
+    print(f"Train samples: {len(train_dataset)}")
+    print(f"Sample training example: {train_dataset[0]}")
     print(f"Loading base model via Unsloth: {args.model}")
 
     device_map = "cuda:0" if torch.cuda.device_count() == 1 else "auto"

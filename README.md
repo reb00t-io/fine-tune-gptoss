@@ -2,9 +2,6 @@
 
 Plain-Python repo to fine-tune **OpenAI GPT-OSS** models using **Unsloth + TRL**.
 
-- Default model: `unsloth/gpt-oss-20b`
-- Default model: `unsloth/gpt-oss-20b-unsloth-bnb-4bit`
-
 ## Quickstart
 
 ### 1) Install
@@ -36,6 +33,12 @@ Optional smoke test:
 
 ```bash
 prepare-dataset --max-samples 512
+
+GitHub repo dataset (clones and turns .py/.md files into training text):
+
+```bash
+prepare-dataset --dataset git@github.com:psf/requests.git --max-samples 2048
+```
 ```
 
 ### 3) Train (LoRA)

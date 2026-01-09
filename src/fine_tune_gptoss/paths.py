@@ -15,5 +15,9 @@ def default_processed_dir() -> Path:
     return default_data_dir() / "processed"
 
 
+def default_raw_dir() -> Path:
+    return default_data_dir() / "raw"
+
+
 def default_outputs_dir() -> Path:
     return repo_root() / "outputs"

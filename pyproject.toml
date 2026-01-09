@@ -18,6 +18,7 @@ dependencies = [
   "huggingface-hub>=0.24",
   "numpy>=1.26",
   "peft>=0.12",
+  "prompt_toolkit>=3.0",
   "safetensors>=0.4",
   "tokenizers>=0.19",
   "transformers==4.56.2",
@@ -29,6 +30,7 @@ dependencies = [
 [project.scripts]
 prepare-dataset = "fine_tune_gptoss.cli.prepare_dataset:main"
 train = "fine_tune_gptoss.cli.train:main"
+chat = "fine_tune_gptoss.cli.chat:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
